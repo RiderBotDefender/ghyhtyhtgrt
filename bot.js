@@ -42,7 +42,16 @@ if (!channel) return;
 channel.send({embed : embed});
 });
 
+client.on('message', message => {
+if (message.content.startsWith("ban")) {
+    var mention = message.mentions.members.first();
+    if(!mention) return message.channel.send("يجب منشن العضو");
 
+    mention.ban("By: " + message.author.tag);
+    
+    message.channel.send("تم أعطاء باند الى : " + mention.tag);
+};
+});
 
 
 client.login(process.env.BOT_TOKEN);
