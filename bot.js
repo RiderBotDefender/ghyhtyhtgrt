@@ -32,12 +32,12 @@ client.on('guildMemberAdd', member => {
     .setAuthor(member.user.username, member.user.avatarURL)
     .setThumbnail(member.user.avatarURL)
     .setTitle(`عضو جديد`)
-    .setDescription(`اهلا بك في السيرفر`)
+    .setDescription(`مرحبا بك في سيرفر`)
     .addField(' :bust_in_silhouette:  انت رقم',`**[ ${member.guild.memberCount} ]**`,true)
     .setColor('GREEN')
     .setFooter('The King Bot', 'https://cdn.discordapp.com/icons/390551815072251904/418fa2788d8115808951c9881ba8f190.jpg')
 
-var channel =member.guild.channels.find('name', 'wlc')
+var channel =member.guild.channels.find('name', '👋╠-𝚆elcome╣👋')
 if (!channel) return;
 channel.send({embed : embed});
 });
