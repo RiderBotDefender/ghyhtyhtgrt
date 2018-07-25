@@ -78,23 +78,95 @@ client.on('message', function(msg) {
     }
   });
 
-  var AsciiTable = require('ascii-data-table').default
-
-
-  hero.on('message',async message => {
-  let messageArray = message.content.split(' ');
-  let mention = message.mentions.users.first();
-  if(message.content.startsWith(prefix + 'transfer')) {
-    if(!mention) return message.channel.send('**منشن شخص**');
-    if(isNaN(messageArray[2])) return message.channel.send('**هذه الخانة يجب ان تكون رقم وليس احرف**');
-    credits[mention.id].credits += (+messageArray[2]);
-    credits[message.author.id].credits += (-messageArray[2]);
-    fs.writeFile('./creditsCode' ,JSON.stringify(credits), (err) => {
-      if(err) console.error(err);
-    });
-    message.channel.send(`**:moneybag: | ${message.author.username}, has transfered ${messageArray[2]}$ to ${mention}**`)
-  }
+ client.on("message", function(message) {
+    let toBan = message.mentions.users.first();
+    let toReason = message.content.split(" ").slice(2).join(" ");
+    let toEmbed = new Discord.RichEmbed()
+   if(message.content.startsWith(prefix + "ban")) {
+       if(!message.member.hasPermission("BAN_MEMBERS")) return message.reply("**# - You dont have enough permissions!**");
+       if(!toBan) return message.reply("**# - Mention a user!**");
+       if(toBan.id === ("447121312960479242")) return message.reply("**# You cannot ban me!**");
+       if(toBan === message.member.guild.owner) return message.reply("**# You cannot ban the owner of the server!**");
+       if(toBan.bannable) return message.reply("**# - I cannot ban someone with a higher role than me!**");
+       if(!toReason) return message.reply("**# - Supply a reason!**")
+       if(toBan.id === message.author.id) return message.reply("**# You cannot ban yourself!**")
+       if(!message.guild.member(toBan).bannable) return message.reply("**# - I cannot ban this person!**")
+       let toEmbed;
+       toEmbed = new Discord.RichEmbed()
+       .setTitle("You have been banned from a server!")
+       .setThumbnail(toBan.avatarURL)
+       .addField("**# - Server:**",message.guild.name,true)
+       .addField("**# - Reason:**",toReason,true)
+       .addField("**# - Banned By:**",message.author,true)
+       if(message.member.hasPermission("BAN_MEMBERS")) return (
+           toBan.sendMessage({embed: toEmbed}).then(() => message.guild.member(toBan).ban({reason: toReason})).then(() => message.channel.send(`**# Done! I banned: ${toBan}**`))
+       );
+       
+   }
 });
-  
+
+client.on('message', message => {
+  if (message.author.x5bz) return;
+  if (!message.content.startsWith(prefix)) return;
+
+  let command = message.content.split(" ")[0];
+  command = command.slice(prefix.length);
+
+  let args = message.content.split(" ").slice(1);
+
+  if (command == "kick") {
+               if(!message.channel.guild) return message.reply('** This command only for servers**');
+         
+  if(!message.guild.member(message.author).hasPermission("KICK_MEMBERS")) return message.reply("**You Don't Have ` KICK_MEMBERS ` Permission**");
+  if(!message.guild.member(client.user).hasPermission("KICK_MEMBERS")) return message.reply("**I Don't Have ` KICK_MEMBERS ` Permission**");
+  let user = message.mentions.users.first();
+  let reason = message.content.split(" ").slice(2).join(" ");
+  /*let b5bzlog = client.channels.find("name", "5bz-log");
+
+  if(!b5bzlog) return message.reply("I've detected that this server doesn't have a 5bz-log text channel.");*/
+  if (message.mentions.users.size < 1) return message.reply("**منشن شخص**");
+  if(!reason) return message.reply ("**اكتب سبب الطرد**");
+  if (!message.guild.member(user)
+  .kickable) return message.reply("**لايمكنني طرد شخص اعلى من رتبتي يرجه اعطاء البوت رتبه عالي**");
+
+  message.guild.member(user).kick();
+
+  const kickembed = new Discord.RichEmbed()
+  .setAuthor(`KICKED!`, user.displayAvatarURL)
+  .setColor("RANDOM")
+  .setTimestamp()
+  .addField("**User:**",  '**[ ' + `${user.tag}` + ' ]**')
+  .addField("**By:**", '**[ ' + `${message.author.tag}` + ' ]**')
+  .addField("**Reason:**", '**[ ' + `${reason}` + ' ]**')
+  message.channel.send({
+    embed : kickembed
+  })
+}
+});
+
+
+client.on('message', msg => {
+  if (msg.author.bot) return;
+  if (!msg.content.startsWith(prefix)) return;
+  let command = msg.content.split(" ")[0];
+  command = command.slice(prefix.length);
+  let args = msg.content.split(" ").slice(1);
+
+    if(command === "clear") {
+        const emoji = client.emojis.find("name", "wastebasket")
+    let textxt = args.slice(0).join("");
+    if(msg.member.hasPermission("MANAGE_MESSAGES")) {
+    if (textxt == "") {
+        msg.delete().then
+    msg.channel.send("```ضع عدد الرسائل التي تريد مسحها ```").then(m => m.delete(3000));
+} else {
+    msg.delete().then
+    msg.delete().then
+    msg.channel.bulkDelete(textxt);
+        msg.channel.send("```عدد الرسائل التي تم مسحها: " + textxt + "```").then(m => m.delete(3000));
+        }    
+    }
+}
+});
 
 client.login(process.env.BOT_TOKEN);
