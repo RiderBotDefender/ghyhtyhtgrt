@@ -79,27 +79,22 @@ client.on('message', function(msg) {
   });
 
   var AsciiTable = require('ascii-data-table').default
-client.on('message', message =>{
 
-    if(message.content == "-roles"){
-        var 
-        ros=message.guild.roles.size,
-        data = [['Rank', 'RoleName']]
-        for(let i =0;i<ros;i++){
-            if(message.guild.roles.array()[i].id !== message.guild.id){
-         data.push([i,`${message.guild.roles.filter(r => r.position == ros-i).map(r=>r.name)}`])
-        }}
-        let res = AsciiTable.table(data)
 
-        message.channel.send(`**\`\`\`xl\n${res}\`\`\`**`);
-    }
+  hero.on('message',async message => {
+  let messageArray = message.content.split(' ');
+  let mention = message.mentions.users.first();
+  if(message.content.startsWith(prefix + 'transfer')) {
+    if(!mention) return message.channel.send('**منشن شخص**');
+    if(isNaN(messageArray[2])) return message.channel.send('**هذه الخانة يجب ان تكون رقم وليس احرف**');
+    credits[mention.id].credits += (+messageArray[2]);
+    credits[message.author.id].credits += (-messageArray[2]);
+    fs.writeFile('./creditsCode' ,JSON.stringify(credits), (err) => {
+      if(err) console.error(err);
+    });
+    message.channel.send(`**:moneybag: | ${message.author.username}, has transfered ${messageArray[2]}$ to ${mention}**`)
+  }
 });
+  
 
-  client.on('message', message => {
-     if(message.content.startsWith(prefix +"bans")) {
-        message.guild.fetchBans()
-        .then(bans => message.channel.send(`The ban count **${bans.size}** Person`))
-  .catch(console.error);
-}
-});
 client.login(process.env.BOT_TOKEN);
